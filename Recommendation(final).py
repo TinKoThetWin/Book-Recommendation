@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -9,26 +8,29 @@ import string
 
 pd.set_option('max_colwidth',1000000)#display maximum columns width
 pd.options.display.max_rows=1000000#display maximum rows
-pd.options.display.max_columns=5
 
+# example json
 jsons = [{"title":"Hello",
 "abstract":["keyword1","keyword2","keyword3"]},
 {"title":"god and devil world",
 "abstract":["key1","key2","key3"]},
 {"title":"Transcending the nine heavens",
-"abstract":["ok","dollar","True"]}]
+"abstract":["ok","dollar","True"]},
+{"title":"Against the Gods",
+"abstract":["azure","sky","poisons","pearl"]}]
 books= json.dumps(jsons) # convert list to json string
-df = pd.read_json(books)
+
+## Start ##
+df = pd.read_json(books) ## books is json string
 df.to_csv()
-# print(df.head())
-# print(csv)
 
 # initializing the new column
 df['final_text'] = ""
+
+# get final text for recommendation
 for index, row in df.iterrows():
     title=row['title']
     abstract=row['abstract']
-
     tokens = title.split()
     # remove punctuation from each token
     table = str.maketrans('', '', string.punctuation)
@@ -45,10 +47,9 @@ for index, row in df.iterrows():
 
 # dropping the abstract column
 df.drop(columns = ['abstract'], inplace = True)
-#print(df)
 
 vectorizer = TfidfVectorizer(analyzer='word')
-#build book-title tfidf matrix
+#build final-text to tfidf matrix
 tfidf_matrix = vectorizer.fit_transform(df['final_text'])
 tfidf_feature_name = vectorizer.get_feature_names()
 
@@ -73,8 +74,23 @@ def recommend(index, method):
     #Return the top 10 most similar books using integar-location based indexing (iloc)
     return df['title'].iloc[books_index]
 
-#input the index of the book
-recom = recommend(0, cosine_similarity)
+#input the index of the book and get top 10 book recommendation
+recom = recommend(1, cosine_similarity) ## need to edit, chosen id from web instead of 1
 
+#for book Id
+book_id= []
+for row in recom.index:
+    book_id.append(row)
+#for book title
+book_title = []
 for book in recom:
-    print(book)
+    book_title.append(book)
+
+#for bookId and Title json
+output_json=[]
+for i in range(len(book_title)):
+    output_json.append({"bookId": book_id[i],"Title":book_title[i]})
+print(output_json)
+
+with open('recommendation.json', 'w') as outfile:
+    json.dump(output_json, outfile)
