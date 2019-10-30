@@ -8,22 +8,26 @@ import string
 
 pd.set_option('max_colwidth',1000000)#display maximum columns width
 pd.options.display.max_rows=1000000#display maximum rows
+pd.options.display.max_columns=5
 
-# example json
-jsons = [{"title":"Hello",
-"abstract":["keyword1","keyword2","keyword3"]},
-{"title":"god and devil world",
-"abstract":["key1","key2","key3"]},
-{"title":"Transcending the nine heavens",
-"abstract":["ok","dollar","True"]},
-{"title":"Against the Gods",
-"abstract":["azure","sky","poisons","pearl"]}]
-books= json.dumps(jsons) # convert list to json string
+# # example json
+# jsons = [{"title":"Hello",
+# "abstract":["keyword1","keyword2","keyword3"]},
+# {"title":"god and devil world",
+# "abstract":["key1","key2","key3"]},
+# {"title":"Transcending the nine heavens",
+# "abstract":["ok","dollar","True"]},
+# {"title":"Against the Gods",
+# "abstract":["azure","sky","poisons","pearl"]}]
+# books= json.dumps(jsons) # convert list to json string
 
 ## Start ##
-df = pd.read_json(books) ## books is json string
-df.to_csv()
+with open('keyword.json') as books:
+    df = pd.read_json(books) ## books is json string
+#df.to_csv()
+check = df[['book_id','title']]
 
+df.set_index('book_id',inplace=True)
 # initializing the new column
 df['final_text'] = ""
 
@@ -47,6 +51,7 @@ for index, row in df.iterrows():
 
 # dropping the abstract column
 df.drop(columns = ['abstract'], inplace = True)
+#print(df)
 
 vectorizer = TfidfVectorizer(analyzer='word')
 #build final-text to tfidf matrix
@@ -74,17 +79,23 @@ def recommend(index, method):
     #Return the top 10 most similar books using integar-location based indexing (iloc)
     return df['title'].iloc[books_index]
 
+print(check)
 #input the index of the book and get top 10 book recommendation
-recom = recommend(1, cosine_similarity) ## need to edit, chosen id from web instead of 1
+bk_id = 3  ## from web
+num = str(check[check['book_id'] == bk_id].index.values)
+num = num.replace("[","")
+num = int(num.replace("]",""))
+#print("Index values for recommendation",num)
+recom = recommend(num, cosine_similarity) ## need to edit, chosen id from web instead of 1
 
-#for book Id
 book_id= []
-for row in recom.index:
-    book_id.append(row)
 #for book title
 book_title = []
 for book in recom:
     book_title.append(book)
+check= check.set_index('title')
+for i in range(len(book_title)):
+    book_id.append(int(check.loc[book_title[i],'book_id'])) #for book Id
 
 #for bookId and Title json
 output_json=[]
