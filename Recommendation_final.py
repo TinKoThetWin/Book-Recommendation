@@ -105,4 +105,3 @@ print(output_json)
 
 with open('recommendation.json', 'w') as outfile:
     json.dump(output_json, outfile)
->>>>>>> origin/master:Recommendation(final).py
