@@ -11,7 +11,7 @@ Installation: pip install pandas
 Usage: Recommendation(final).py keyword.json
 
 To run Recommendation(final).py
-    open command line: Type "python Recommendation(final).py.py"
+    open command line: Type "python Recommendation(final).py"
     
 Open this link in the browser
 http://127.0.0.1:5000/
