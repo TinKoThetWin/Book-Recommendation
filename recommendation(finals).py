@@ -17,6 +17,7 @@ from sklearn.metrics.pairwise import linear_kernel
 import pandas as pd
 import shutil
 
+nltk.download('stopwords')
 ## REQUIREMENTS : flask, nltk, PyPDF2, textract, panda, sklearn
 
 # ********* Note: This script contains three section *******
