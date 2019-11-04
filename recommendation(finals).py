@@ -189,11 +189,11 @@ def recommendation():
         #Return the top 10 most similar books using integar-location based indexing (iloc)
         return df['title'].iloc[books_index]
 
-    # print(check)
+    print("check",check)
     #input the index of the book and get top 10 book recommendation
     row_no = str(check[check['book_id'] == num].index.values)
     row_no = int(row_no.replace("[","").replace("]","")) ## chosen id from web
-    # print("Index values for recommendation",row_no)
+    print("Index values for recommendation",row_no)
     recom = recommend(row_no, cosine_similarity) ## need to edit, chosen id from web instead of 1
 
     book_id= []
